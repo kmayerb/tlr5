@@ -215,7 +215,7 @@ if __name__ == "__main__":
 									   diamond_output_filename = 'diamond.tabular_results.txt',
 									   min_percent_identity = 75,	
 									   output_format = 6,
-									   threads = 6)
+									   threads = args.threads)
 	print(f"WROTE {output_filename}")
 
 	summary_df, diamond_df = parse_diamond_blastx_output(diamond_output_filename = 'diamond.tabular_results.txt', df = ref_df)
