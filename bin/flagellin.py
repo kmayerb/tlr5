@@ -150,7 +150,10 @@ if __name__ == "__main__":
 	python bin/flagellin.py \
 	--input_fastq_gz /Volumes/Samsung_T5/kmayerbl/cf_input/C94BLACXX_4_GCTACGCT_GTAAGGAG.S.fq.fastq.gz  \
 	--outfile_filename outputs/flagellin_outputfile.tsv \
+	--threads 6 \
 	--get_detail
+
+	python bin/flagellin.py --input_fastq_gz test.fastq.gz  --outfile_filename outputs/flagellin_outputfile.tsv --get_detail
 	"""
 	import argparse
 
@@ -162,6 +165,8 @@ if __name__ == "__main__":
 		action="store", type = str, required=True, help = "Filename for output table summarizing flagellin discovered in the fastq.gz.")
 	parser.add_argument('--base_dir',
 		type = str, action="store", required=False, default = '', help ="The base directory (OPTIONAL AND NOT NECESSARY)")
+	parser.add_argument('--threads',
+		type = int, action="store", required=False, default = 6, help ="Max number of threads")
 	parser.add_argument('--tlr5_pattern',
 		type = str, action="store", required=False, default = '([LVIM].R[MIALV]..[LI])', help ="The tlr5_pattern examined in region 80-100 of the D1 sububit.")
 	parser.add_argument('--pfam_ncbi_fasta_filename', 
@@ -172,6 +177,7 @@ if __name__ == "__main__":
 		action="store", type = str, required=False, default = 'inputs/hu_table.csv', help = "Filename Table from Hu and Reeves 2020")
 	parser.add_argument('--get_detail', 
 		action='store_true', default = False, help = "If this flag is used the full diamond tabular result is written in addition to the summary information")
+
 	
 
 	args = parser.parse_args()
