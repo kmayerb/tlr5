@@ -16,10 +16,14 @@ pip install biopython
 * The primary input is a compressed fastq file of metagenomic reads.
 * The output is a tabular summary of the best hits against a database of flagellin genes
 
+
+### Basic usage
+
 ```bash
-python bin/flagellin.py --input_fastq_gz {os.path.join(resources, f)} --outfile_filename outputs/{f}.flagellin.summary.tsv --threads 6"
+python bin/flagellin.py --input_fastq_gz {os.path.join(resources, f)} --outfile_filename outputs/{f}.flagellin.summary.tsv --threads 6
 ```
 
+#### Commandline options 
 ```bash
 python bin/flagellin.py --help
 usage: flagellin.py [-h] --input_fastq_gz INPUT_FASTQ_GZ --outfile_filename OUTFILE_FILENAME [--base_dir BASE_DIR] [--threads THREADS] [--tlr5_pattern TLR5_PATTERN] [--pfam_ncbi_fasta_filename PFAM_NCBI_FASTA_FILENAME] [--hu_accession_list_filename HU_ACCESSION_LIST_FILENAME] [--hu_table_filename HU_TABLE_FILENAME]
@@ -44,13 +48,18 @@ optional arguments:
   --get_detail          If this flag is used the full diamond tabular result is written in addition to the summary information
 ```
 
+#### Temporary Files
 
 Calling this program will generate the following temporary files:
 * flagellin_db.fasta
 * flagellin_db.dmnd
 * diamond.tabular_results.txt
 
+
+### Output File
+
 However, the primary output will be found in outputs (e.g., outputs/129650059_TAAGGCGA-CTAAGCCT.fastq.gz.flagellin.summary.tsv). 
+
 
 Each row corresponds with a single read
 
@@ -74,5 +83,8 @@ Each row corresponds with a single read
 * `n` - number of hits
 
 
-3. The commandline script may be called on many fastq files within a target folder as shown 
+## Calling the commandline script for many files
+
+The commandline script may be called on many fastq files within a target folder as shown 
 in `run.py`
+
