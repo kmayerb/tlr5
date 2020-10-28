@@ -50,10 +50,24 @@ def construct_reference_flagellin_dataframe(pfam_ncbi_fasta_filename,
 		hu_table_filename,
 		tlr5_pos_pattern = '([LVIM].R[MIALV]..[LI])',
 		base_dir = '/Users/kmayerbl/TLR/'):
-
 	"""
-	This dataframe will be used later on to 
-	score diamond results
+	Constructs a DataFrame that will be used later on to score diamond results
+
+	Parameters 
+	----------
+	pfam_ncbi_fasta_filename : str
+		Default 'inputs/PF00669_ncbi.txt'
+	hu_accession_list_filename : str
+		Default 'inputs/hu_all_ncbi.txt'
+	hu_table_filename : str
+		Default 'inputs/hu_table.csv'
+	tlr5_pos_pattern : str
+		Default '([LVIM].R[MIALV]..[LI])'
+	base_dir : str
+
+	Returns
+	-------
+	df : Pandas DataFrame
 	"""
 	record_dict = SeqIO.to_dict(SeqIO.parse(pfam_ncbi_fasta_filename, 'fasta'))
 
@@ -80,6 +94,24 @@ def construct_reference_flagellin_dataframe(pfam_ncbi_fasta_filename,
 	return df
 
 def write_flaggelin_db_fasta(df, fasta_name = "flagellin_db.fasta"):
+	"""
+	Creates a fasta file from a Dataframe
+
+	Parameters
+	----------
+	df : Pandas DataFrame
+		This will be the DataFrame output from construct_reference_flagellin_dataframe
+	fasta_name : str
+		Name of the output fasta file
+
+	Returns
+	-------
+	fasta_name : str
+
+	Note
+	----
+	Write file to working directory 
+	"""
 	with open(fasta_name, 'w') as oh:
 		for i,r in df.iterrows():
 			oh.write(f">{r['Accession']}\n{r['seq']}\n")
@@ -87,6 +119,9 @@ def write_flaggelin_db_fasta(df, fasta_name = "flagellin_db.fasta"):
 
 
 def make_diamond_db(fasta_name ='flagellin_db.fasta', db_name = 'flagellin_db.dmnd'):
+	"""
+	Makes diamond db
+	"""
 	cmd = f"diamond makedb --in {fasta_name} --db {db_name} --threads 2"
 	print(cmd)
 	os.system(cmd)
@@ -98,6 +133,9 @@ def diamond_blastx(db_name = 'flagellin_db.dmnd',
 				   min_percent_identity = 75,
 				   output_format = 6,
 				   threads = 6):
+	"""
+	Runs blastx
+	"""
 	cmd = f"diamond blastx --db {db_name} --query {query_fastq_gz }	--out {diamond_output_filename} --outfmt {output_format} --id {min_percent_identity} --threads {threads}"   
 	print(cmd)
 	os.system(cmd)
@@ -120,9 +158,17 @@ def adjudicate_list(l):
 
 
 def parse_diamond_blastx_output(df, diamond_output_filename = 'diamond.tabular_results.txt'):
-
+	"""
+	df : DataFrame 
+		This should be the reference DataFrame from construct_reference_flagellin_dataframe()
+	diamond_output_filename : str
+		Path to fle output from diamond_blastx()
+	Returns
+	-------
+	Tuple of DataFrames
+	"""
 	diamond_df = pd.read_csv( diamond_output_filename, sep = "\t", header = None)
-	diamond_df .columns = ['qseqid','sseqid','pident','length','mismatch','gapopen','qstart','qend','sstart','send','evalue','bitscore']
+	diamond_df.columns = ['qseqid','sseqid','pident','length','mismatch','gapopen','qstart','qend','sstart','send','evalue','bitscore']
 	diamond_df  = diamond_df.merge(df, how ="left", left_on = "sseqid", right_on = "Accession")
 
 	summary_lines = list()
@@ -186,7 +232,6 @@ if __name__ == "__main__":
 	    print(f"{arg}={getattr(args, arg)}")
 	
 	input_fastq_gz              = args.input_fastq_gz 
-
 	input_fastq_gz              = args.input_fastq_gz	            #'/Volumes/Samsung_T5/kmayerbl/cf_input/C94BLACXX_4_GCTACGCT_GTAAGGAG.S.fq.fastq.gz' 
 	tlr5_pattern                = args.tlr5_pattern  				# '([LVIM].R[MIALV]..[LI])'
 	base_dir                    = args.base_dir 					# '/Users/kmayerbl/TLR/'
@@ -194,6 +239,19 @@ if __name__ == "__main__":
 	hu_accession_list_filename  = args.hu_accession_list_filename 	# os.path.join(base_dir,'inputs', 'hu_all_ncbi.txt')
 	hu_table_filename 			= args.hu_table_filename			# os.path.join(base_dir, 'inputs', 'hu_table.csv')
 	outfile_filename            = args.outfile_filename             # "test.outfile.txt"
+
+	# THIS TESTING BLOCK IS FOR INTERACTIVELY RUNNING INSTEAD OF AS A SCRIPT 
+	testing = False
+	if testing:
+		input_fastq_gz              ='/Volumes/Samsung_T5/kmayerbl/cf_input/C94BLACXX_4_GCTACGCT_GTAAGGAG.S.fq.fastq.gz' 
+		tlr5_pattern                ='([LVIM].R[MIALV]..[LI])'
+		base_dir                    ='/Users/kmayerbl/TLR/tlr5'
+		pfam_ncbi_fasta_filename    =os.path.join(base_dir, 'inputs','PF00669_ncbi.txt')
+		hu_accession_list_filename  =os.path.join(base_dir,'inputs', 'hu_all_ncbi.txt')
+		hu_table_filename 			= os.path.join(base_dir, 'inputs', 'hu_table.csv')
+		outfile_filename            ="test.outfile.txt"
+
+
 
 	ref_df = construct_reference_flagellin_dataframe(pfam_ncbi_fasta_filename= pfam_ncbi_fasta_filename,
 		hu_accession_list_filename = hu_accession_list_filename, 
