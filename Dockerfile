@@ -1,4 +1,4 @@
-FROM quay.io/jitesoft/debian:stable
+FROM quay.io/jitesoft/debian:latest
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
